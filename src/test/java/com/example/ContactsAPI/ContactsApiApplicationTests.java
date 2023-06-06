@@ -9,5 +9,4 @@ class ContactsApiApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }
