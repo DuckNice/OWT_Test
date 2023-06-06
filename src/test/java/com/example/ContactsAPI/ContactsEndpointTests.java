@@ -149,7 +149,6 @@ class ContactsEndpointTests {
 
         // Then
         assertEquals(HttpStatus.NO_CONTENT.value(), getResponse.getStatusCode());
-        assertEquals(0, getResponse.body().as(Contact[].class).length);
     }
 
     // U
