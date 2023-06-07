@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.http.MediaType;
 
 import com.example.ContactsAPI.models.ContactForCreation;
 import com.example.ContactsAPI.models.DBContact;
+import com.example.ContactsAPI.repositories.ContactRepository;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -20,12 +22,16 @@ import io.restassured.response.Response;
 class ContactsEndpointTests {
     private static final String API_ROOT = "http://localhost/api/contacts";
 
+    @Autowired
+    ContactRepository contactRepo;
+
     @LocalServerPort
     private int port;
 
     @BeforeEach
     public void setPort() {
         RestAssured.port = this.port;
+        contactRepo.deleteAll();
     }
 
     private ContactForCreation createRandomContact() {
@@ -40,6 +46,10 @@ class ContactsEndpointTests {
 
     private String getContactUrl(Response response) {
         return response.getHeader("location");
+    }
+
+    private String getRandomContactUrl() {
+        return API_ROOT + "/" + RandomStringUtils.randomNumeric(10);
     }
 
     // C
@@ -100,7 +110,7 @@ class ContactsEndpointTests {
                 .body(contact).post(API_ROOT);
 
         // When
-        Response getResponse = RestAssured.get(API_ROOT + "/" + (getContactUrl(createResponse)));
+        Response getResponse = RestAssured.get(getContactUrl(createResponse));
 
         // Then
         assertEquals(HttpStatus.OK.value(), getResponse.getStatusCode());
@@ -112,7 +122,7 @@ class ContactsEndpointTests {
         // Given
 
         // When
-        Response getResponse = RestAssured.get(API_ROOT + "/" + RandomStringUtils.randomAlphanumeric(10));
+        Response getResponse = RestAssured.get(getRandomContactUrl());
 
         // Then
         assertEquals(HttpStatus.NOT_FOUND.value(), getResponse.getStatusCode());
@@ -162,7 +172,7 @@ class ContactsEndpointTests {
                 .body(contact).post(API_ROOT);
         Response updateResponse = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(contact2).patch(getContactUrl(createResponse));
+                .body(contact2).put(getContactUrl(createResponse));
 
         // Then
         assertEquals(HttpStatus.OK.value(), updateResponse.getStatusCode());
@@ -177,7 +187,7 @@ class ContactsEndpointTests {
         // When
         Response updateResponse = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(contact).patch(API_ROOT + RandomStringUtils.randomAlphanumeric(10));
+                .body(contact).put(getRandomContactUrl());
 
         // Then
         assertEquals(HttpStatus.CREATED.value(), updateResponse.getStatusCode());
@@ -192,10 +202,35 @@ class ContactsEndpointTests {
         // When
         Response updateResponse = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(contact).patch(RandomStringUtils.randomAlphanumeric(10));
+                .body(contact).put(getRandomContactUrl());
 
         // Then
         assertEquals(HttpStatus.BAD_REQUEST.value(), updateResponse.getStatusCode());
+    }
+
+    @Test
+    void updateWithExisting_email_then409() {
+        // Given
+        ContactForCreation contact = createRandomContact();
+        ContactForCreation otherContact = createRandomContact();
+
+        Response createResponse = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(contact).post(API_ROOT);
+
+        // When
+        RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(otherContact).post(API_ROOT);
+
+        contact.setEmail(otherContact.getEmail());
+
+        Response updateResponse = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(contact).put(getContactUrl(createResponse));
+
+        // Then
+        assertEquals(HttpStatus.CONFLICT.value(), updateResponse.getStatusCode());
     }
 
     // D
@@ -215,7 +250,7 @@ class ContactsEndpointTests {
         // Then
         assertEquals(HttpStatus.OK.value(), deleteResponse.getStatusCode());
         Response getResponse = RestAssured.get(contactLoc);
-        assertEquals(HttpStatus.NOT_FOUND.value(), getResponse);
+        assertEquals(HttpStatus.NOT_FOUND.value(), getResponse.getStatusCode());
     }
 
     @Test
@@ -223,7 +258,7 @@ class ContactsEndpointTests {
         // Given
 
         // When
-        Response deleteResponse = RestAssured.delete(API_ROOT + "/" + RandomStringUtils.randomAlphanumeric(5));
+        Response deleteResponse = RestAssured.delete(getRandomContactUrl());
 
         // Then
         assertEquals(HttpStatus.NOT_FOUND.value(), deleteResponse.getStatusCode());
