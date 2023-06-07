@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.ContactsAPI.models.ContactForCreation;
-import com.example.ContactsAPI.models.DBContact;
+import com.example.ContactsAPI.models.contact.ContactForCreation;
+import com.example.ContactsAPI.models.contact.DBContact;
 import com.example.ContactsAPI.repositories.ContactRepository;
 import com.example.ContactsAPI.services.ContactCrudService;
 

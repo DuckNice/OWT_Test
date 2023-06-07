@@ -1,4 +1,6 @@
-package com.example.ContactsAPI.models;
+package com.example.ContactsAPI.models.contact;
+
+import com.example.ContactsAPI.models.DBObject;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DBContact {
+public class DBContact implements DBObject {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID", nullable = false, unique = true)

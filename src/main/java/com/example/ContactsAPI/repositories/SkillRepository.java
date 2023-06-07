@@ -5,9 +5,9 @@ import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import com.example.ContactsAPI.models.contact.DBContact;
+import com.example.ContactsAPI.models.skill.DBSkill;
 
 @Repository
-public interface ContactRepository extends CrudRepository<DBContact, Long> {
-    Optional<DBContact> findByEmail(String email);
+public interface SkillRepository extends CrudRepository<DBSkill, Long> {
+    Optional<DBSkill> findByName(String name);
 }

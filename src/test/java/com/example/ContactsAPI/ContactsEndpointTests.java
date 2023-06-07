@@ -11,8 +11,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import com.example.ContactsAPI.models.ContactForCreation;
-import com.example.ContactsAPI.models.DBContact;
+import com.example.ContactsAPI.models.contact.ContactForCreation;
+import com.example.ContactsAPI.models.contact.DBContact;
 import com.example.ContactsAPI.repositories.ContactRepository;
 
 import io.restassured.RestAssured;
