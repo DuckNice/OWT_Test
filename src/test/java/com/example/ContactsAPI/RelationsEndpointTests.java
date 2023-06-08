@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 
 import com.example.ContactsAPI.models.contact.DBContact;
 import com.example.ContactsAPI.models.contact.DTOContact;
+import com.example.ContactsAPI.models.skill.DBSkill;
 import com.example.ContactsAPI.models.skill.DTOSkill;
 import com.example.ContactsAPI.models.skill.SkillLevel;
 import com.example.ContactsAPI.repositories.ContactRepository;
@@ -23,7 +24,8 @@ import io.restassured.response.Response;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RelationsEndpointTests {
-    public final static String API_ROOT = "http://localhost/api/contacts";
+    public final static String CONTACT_API_ROOT = "http://localhost/api/contacts";
+    public final static String SKILL_API_ROOT = "http://localhost/api/skills";
 
     @Autowired
     protected ContactRepository contactRepo;
@@ -73,7 +75,7 @@ class RelationsEndpointTests {
         // When
         Response createResponse = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(contact).post(API_ROOT);
+                .body(contact).post(CONTACT_API_ROOT);
 
         // Then
         assertEquals(HttpStatus.CREATED.value(), createResponse.getStatusCode());
@@ -93,11 +95,11 @@ class RelationsEndpointTests {
         // When
         Response createResponse = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(contact).post(API_ROOT);
+                .body(contact).post(CONTACT_API_ROOT);
 
         Response createResponse2 = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(contact2).post(API_ROOT);
+                .body(contact2).post(CONTACT_API_ROOT);
         // Then
         assertEquals(HttpStatus.CREATED.value(), createResponse.getStatusCode());
         assertEquals(HttpStatus.CREATED.value(), createResponse2.getStatusCode());
@@ -116,7 +118,7 @@ class RelationsEndpointTests {
         // When
         Response createResponse = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(contact).post(API_ROOT);
+                .body(contact).post(CONTACT_API_ROOT);
 
         // Then
         Response getResponse = RestAssured.get(getEntryUrl(createResponse));
@@ -124,5 +126,26 @@ class RelationsEndpointTests {
         System.out.println(getResponse.getBody().asPrettyString());
         assertEquals(2, getResponse.then().assertThat().extract().as(DBContact.class)
                 .getSkills().size());
+    }
+
+    @Test
+    void onRead_ContactWSkill_ThenSkillHasContact() {
+        // Given
+        DTOContact contact = createRandomContact();
+        contact.setSkills(new DTOSkill[] { createRandomSkill(), createRandomSkill() });
+        Response createResponse = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(contact).post(CONTACT_API_ROOT);
+        DBSkill skill = createResponse.getBody().as(DBContact.class).getSkills().stream().toList().get(0);
+
+        // When
+
+        Response getResponse = RestAssured.get(SKILL_API_ROOT + "/" + skill.getId());
+
+        // Then
+        assertEquals(HttpStatus.OK.value(), getResponse.getStatusCode());
+        System.out.println(getResponse.getBody().asPrettyString());
+        assertEquals(1, getResponse.then().assertThat().extract().as(DBSkill.class)
+                .getContacts().size());
     }
 }

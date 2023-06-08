@@ -32,6 +32,9 @@ public abstract class BaseRestController<DB, DT, R extends CrudRepository<DB, Lo
 
     protected abstract String generateObjectUrl(DB entry, HttpServletRequest req);
 
+    // E.g. Break any circular links
+    protected abstract DB prepareObjectForReturn(DB entry);
+
     @GetMapping
     public ResponseEntity<List<DB>> findAll() {
         List<DB> entries = IterableUtils.toList(repo.findAll());
@@ -39,7 +42,7 @@ public abstract class BaseRestController<DB, DT, R extends CrudRepository<DB, Lo
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.ok(entries);
+        return ResponseEntity.ok(entries.stream().map((DB entry) -> prepareObjectForReturn(entry)).toList());
     }
 
     @PostMapping
@@ -49,7 +52,8 @@ public abstract class BaseRestController<DB, DT, R extends CrudRepository<DB, Lo
 
         // Created or conflict
         if (newEntry.isPresent()) {
-            return ResponseEntity.created(URI.create(generateObjectUrl(newEntry.get(), req))).body(newEntry.get());
+            return ResponseEntity.created(URI.create(generateObjectUrl(newEntry.get(), req))).body(
+                    prepareObjectForReturn(newEntry.get()));
         } else {
             return new ResponseEntity<>(HttpStatusCode.valueOf(409));
         }
@@ -60,7 +64,7 @@ public abstract class BaseRestController<DB, DT, R extends CrudRepository<DB, Lo
         Optional<DB> entry = repo.findById(id);
 
         if (entry.isPresent()) {
-            return ResponseEntity.ok(entry.get());
+            return ResponseEntity.ok(prepareObjectForReturn(entry.get()));
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -84,7 +88,8 @@ public abstract class BaseRestController<DB, DT, R extends CrudRepository<DB, Lo
         if (operationResponse.getFirst()) {
             return ResponseEntity.ok(newEntry.get());
         } else {
-            return ResponseEntity.created(URI.create(generateObjectUrl(newEntry.get(), req))).body(newEntry.get());
+            return ResponseEntity.created(URI.create(generateObjectUrl(newEntry.get(), req))).body(
+                    prepareObjectForReturn(newEntry.get()));
         }
     }
 
