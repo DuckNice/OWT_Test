@@ -52,12 +52,12 @@ abstract class BaseEndpointTests<DB extends DBObject, DT extends DTObject, R ext
     @Test
     void createValid_singleEntry_then201() {
         // Given
-        DT contact = createRandomObject();
+        DT entry = createRandomObject();
 
         // When
         Response createResponse = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(contact)
+                .body(entry)
                 .post(API_ROOT);
 
         // Then
@@ -65,14 +65,14 @@ abstract class BaseEndpointTests<DB extends DBObject, DT extends DTObject, R ext
     }
 
     @Test
-    void createInvalid_contact_then400() {
+    void createInvalid_entry_then400() {
         // Given
-        DT contact = createInvalidObject();
+        DT entry = createInvalidObject();
 
         // When
         Response createResponse = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(contact).post(API_ROOT);
+                .body(entry).post(API_ROOT);
 
         // Then
         assertEquals(HttpStatus.BAD_REQUEST.value(), createResponse.getStatusCode());
@@ -82,10 +82,10 @@ abstract class BaseEndpointTests<DB extends DBObject, DT extends DTObject, R ext
     @Test
     void readFound_singleEntry_then200() {
         // Given
-        DT contact = createRandomObject();
+        DT entry = createRandomObject();
         Response createResponse = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(contact).post(API_ROOT);
+                .body(entry).post(API_ROOT);
 
         // When
         Response getResponse = RestAssured.get(getEntryUrl(createResponse));
@@ -108,14 +108,14 @@ abstract class BaseEndpointTests<DB extends DBObject, DT extends DTObject, R ext
     @Test
     void readFound_entryList_then200() {
         // Given
-        DT contact = createRandomObject();
-        DT contact2 = createRandomObject();
+        DT entry = createRandomObject();
+        DT entry2 = createRandomObject();
         RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(contact).post(API_ROOT);
+                .body(entry).post(API_ROOT);
         RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(contact2).post(API_ROOT);
+                .body(entry2).post(API_ROOT);
 
         // When
         Response getResponse = RestAssured.get(API_ROOT);
@@ -140,16 +140,16 @@ abstract class BaseEndpointTests<DB extends DBObject, DT extends DTObject, R ext
     @Test
     void updateWithValid_singleEntry_then200() {
         // Given
-        DT contact = createRandomObject();
-        DT contact2 = createRandomObject();
+        DT entry = createRandomObject();
+        DT entry2 = createRandomObject();
 
         // When
         Response createResponse = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(contact).post(API_ROOT);
+                .body(entry).post(API_ROOT);
         Response updateResponse = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(contact2).put(getEntryUrl(createResponse));
+                .body(entry2).put(getEntryUrl(createResponse));
 
         // Then
         assertEquals(HttpStatus.OK.value(), updateResponse.getStatusCode());
@@ -158,12 +158,12 @@ abstract class BaseEndpointTests<DB extends DBObject, DT extends DTObject, R ext
     @Test
     void updateMissing_singleEntry_then201() {
         // Given
-        DT contact = createRandomObject();
+        DT entry = createRandomObject();
 
         // When
         Response updateResponse = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(contact).put(getRandomEntryUrl());
+                .body(entry).put(getRandomEntryUrl());
 
         // Then
         assertEquals(HttpStatus.CREATED.value(), updateResponse.getStatusCode());
@@ -172,12 +172,12 @@ abstract class BaseEndpointTests<DB extends DBObject, DT extends DTObject, R ext
     @Test
     void UpdateWithInvalid_singleEntry_then400() {
         // Given
-        DT contact = createInvalidObject();
+        DT entry = createInvalidObject();
 
         // When
         Response updateResponse = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(contact).put(getRandomEntryUrl());
+                .body(entry).put(getRandomEntryUrl());
 
         // Then
         assertEquals(HttpStatus.BAD_REQUEST.value(), updateResponse.getStatusCode());
@@ -187,19 +187,19 @@ abstract class BaseEndpointTests<DB extends DBObject, DT extends DTObject, R ext
     @Test
     void deleteExisting_singleEntry_then200() {
         // Given
-        DT contact = createRandomObject();
+        DT entry = createRandomObject();
         Response createResponse = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(contact).post(API_ROOT);
+                .body(entry).post(API_ROOT);
 
-        String contactLoc = getEntryUrl(createResponse);
+        String entryLoc = getEntryUrl(createResponse);
 
         // When
-        Response deleteResponse = RestAssured.delete(contactLoc);
+        Response deleteResponse = RestAssured.delete(entryLoc);
 
         // Then
         assertEquals(HttpStatus.OK.value(), deleteResponse.getStatusCode());
-        Response getResponse = RestAssured.get(contactLoc);
+        Response getResponse = RestAssured.get(entryLoc);
         assertEquals(HttpStatus.NOT_FOUND.value(), getResponse.getStatusCode());
     }
 
