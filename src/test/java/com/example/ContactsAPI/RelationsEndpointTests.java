@@ -11,6 +11,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import com.example.ContactsAPI.models.contact.DBContact;
 import com.example.ContactsAPI.models.contact.DTOContact;
 import com.example.ContactsAPI.models.skill.DTOSkill;
 import com.example.ContactsAPI.models.skill.SkillLevel;
@@ -78,5 +79,50 @@ class RelationsEndpointTests {
         assertEquals(HttpStatus.CREATED.value(), createResponse.getStatusCode());
         assertEquals(2, skillRepo.count());
         assertEquals(1, contactRepo.count());
+    }
+
+    @Test
+    void onCreate_SeveralContactWSkill_PreserveSkill() {
+        // Given
+        DTOSkill persistedSkill = createRandomSkill();
+        DTOContact contact = createRandomContact();
+        contact.setSkills(new DTOSkill[] { persistedSkill, createRandomSkill() });
+        DTOContact contact2 = createRandomContact();
+        contact2.setSkills(new DTOSkill[] { persistedSkill, createRandomSkill() });
+
+        // When
+        Response createResponse = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(contact).post(API_ROOT);
+
+        Response createResponse2 = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(contact2).post(API_ROOT);
+        // Then
+        assertEquals(HttpStatus.CREATED.value(), createResponse.getStatusCode());
+        assertEquals(HttpStatus.CREATED.value(), createResponse2.getStatusCode());
+        assertEquals(3, skillRepo.count());
+        assertEquals(2, contactRepo.count());
+    }
+
+    // R
+
+    @Test
+    void onRead_ContactWSkill_ThenExists() {
+        // Given
+        DTOContact contact = createRandomContact();
+        contact.setSkills(new DTOSkill[] { createRandomSkill(), createRandomSkill() });
+
+        // When
+        Response createResponse = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(contact).post(API_ROOT);
+
+        // Then
+        Response getResponse = RestAssured.get(getEntryUrl(createResponse));
+        assertEquals(HttpStatus.OK.value(), getResponse.getStatusCode());
+        System.out.println(getResponse.getBody().asPrettyString());
+        assertEquals(2, getResponse.then().assertThat().extract().as(DBContact.class)
+                .getSkills().size());
     }
 }

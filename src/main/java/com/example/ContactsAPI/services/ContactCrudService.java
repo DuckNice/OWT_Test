@@ -1,6 +1,7 @@
 package com.example.ContactsAPI.services;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.ContactsAPI.models.contact.DBContact;
 import com.example.ContactsAPI.models.contact.DTOContact;
+import com.example.ContactsAPI.models.skill.DBSkill;
 import com.example.ContactsAPI.repositories.ContactRepository;
 
 @Service
@@ -36,8 +38,7 @@ public class ContactCrudService extends CrudService<DBContact, DTOContact, Conta
 
     public Optional<DBContact> createWUnknownId(DTOContact creationEntry) {
         // Create the annotated skills
-        // Set<DBSkill> skills =
-        // skillsService.createSkillsListFromDTO(creationEntry.getSkills());
+        Set<DBSkill> skills = skillsService.createSkillsListFromDTO(creationEntry.getSkills());
 
         // Check if there's a conflict with existing db structures
         if (!dbConflictValidation(creationEntry, -1L)) {
@@ -46,7 +47,7 @@ public class ContactCrudService extends CrudService<DBContact, DTOContact, Conta
 
         // Save and return
         DBContact newEntry = dbEntryFromDTO(creationEntry);
-        // newEntry.setSkills(skills);
+        newEntry.setSkills(skills);
         return Optional.of((repo.save(newEntry)));
     }
 
@@ -55,8 +56,7 @@ public class ContactCrudService extends CrudService<DBContact, DTOContact, Conta
     /// changed.
     public Pair<Boolean, Optional<DBContact>> createOrUpdateWKnownId(long id, DTOContact creationEntry) {
         // Create the annotated skills
-        // Set<DBSkill> skills =
-        // skillsService.createSkillsListFromDTO(creationEntry.getSkills());
+        Set<DBSkill> skills = skillsService.createSkillsListFromDTO(creationEntry.getSkills());
 
         // Check if there's a conflict with existing db structures
         if (!dbConflictValidation(creationEntry, id)) {
@@ -68,7 +68,7 @@ public class ContactCrudService extends CrudService<DBContact, DTOContact, Conta
 
         // Save and return
         DBContact newEntry = dbEntryFromDTO(creationEntry);
-        // newEntry.setSkills(skills);
+        newEntry.setSkills(skills);
         return Pair.of(existingEntry.isPresent(), Optional.of((repo.save(newEntry))));
     }
 }

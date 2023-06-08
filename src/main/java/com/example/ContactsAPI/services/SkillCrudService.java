@@ -1,6 +1,7 @@
 package com.example.ContactsAPI.services;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -60,6 +61,10 @@ public class SkillCrudService extends CrudService<DBSkill, DTOSkill, SkillReposi
     }
 
     public Set<DBSkill> createSkillsListFromDTO(DTOSkill[] skills) {
+        if (skills == null) {
+            return new HashSet<DBSkill>();
+        }
+
         return Arrays.stream(skills)
                 .<DBSkill>map((DTOSkill dto) -> {
                     Optional<DBSkill> oldSkill = repo.findByNameAndLevel(dto.getName(), dto.getSkill());

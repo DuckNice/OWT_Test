@@ -1,8 +1,8 @@
 package com.example.ContactsAPI.models.skill;
 
+import java.util.HashSet;
 import java.util.Set;
 
-import com.example.ContactsAPI.models.DBObject;
 import com.example.ContactsAPI.models.contact.DBContact;
 
 import jakarta.persistence.Column;
@@ -16,16 +16,18 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(uniqueConstraints = {
         @UniqueConstraint(name = "UniqueNameAndLevel", columnNames = { "NAME", "LEVEL" }) })
-public class DBSkill implements DBObject {
+public class DBSkill {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID", nullable = false, unique = true)
@@ -36,7 +38,6 @@ public class DBSkill implements DBObject {
     @Column(name = "LEVEL", nullable = false)
     @Enumerated(EnumType.STRING)
     private SkillLevel level;
-    @Column(name = "CONTACTS")
     @ManyToMany(mappedBy = "skills")
-    private Set<DBContact> contacts;
+    private Set<DBContact> contacts = new HashSet<>();
 }

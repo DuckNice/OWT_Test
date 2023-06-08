@@ -18,15 +18,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.ContactsAPI.models.DBObject;
-import com.example.ContactsAPI.models.DTObject;
 import com.example.ContactsAPI.services.CrudService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController()
-public abstract class BaseRestController<DB extends DBObject, DT extends DTObject, R extends CrudRepository<DB, Long>, S extends CrudService<DB, DT, R>> {
+public abstract class BaseRestController<DB, DT, R extends CrudRepository<DB, Long>, S extends CrudService<DB, DT, R>> {
     @Autowired
     R repo;
     @Autowired

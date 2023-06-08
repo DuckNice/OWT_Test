@@ -11,13 +11,10 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import com.example.ContactsAPI.models.DBObject;
-import com.example.ContactsAPI.models.DTObject;
-
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 
-abstract class BaseEndpointTests<DB extends DBObject, DT extends DTObject, R extends CrudRepository<DB, Long>> {
+abstract class BaseEndpointTests<DB, DT, R extends CrudRepository<DB, Long>> {
     protected final String API_ROOT;
 
     protected BaseEndpointTests(String API_ROOT) {

@@ -1,13 +1,11 @@
 package com.example.ContactsAPI.models.skill;
 
-import com.example.ContactsAPI.models.DTObject;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class DTOSkill implements DTObject {
+public class DTOSkill {
     @NotBlank(message = "Name is mandatory")
     private String name;
     @NotNull(message = "Skill is mandatory")
