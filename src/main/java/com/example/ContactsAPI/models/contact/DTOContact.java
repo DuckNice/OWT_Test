@@ -1,13 +1,14 @@
 package com.example.ContactsAPI.models.contact;
 
 import com.example.ContactsAPI.models.DTObject;
+import com.example.ContactsAPI.models.skill.DTOSkill;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class ContactForCreation implements DTObject {
+public class DTOContact implements DTObject {
     @NotBlank(message = "First name is mandatory")
     private String firstName;
     @NotBlank(message = "Last name is mandatory")
@@ -17,6 +18,6 @@ public class ContactForCreation implements DTObject {
     @NotBlank(message = "Email is mandatory")
     @Email(message = "Email must be valid")
     private String email;
-    // @Patter
     private String mobileNumber;
+    private DTOSkill[] skills;
 }

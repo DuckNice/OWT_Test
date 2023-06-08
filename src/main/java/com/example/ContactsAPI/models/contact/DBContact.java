@@ -1,12 +1,18 @@
 package com.example.ContactsAPI.models.contact;
 
+import java.util.Set;
+
 import com.example.ContactsAPI.models.DBObject;
+import com.example.ContactsAPI.models.skill.DBSkill;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,4 +39,8 @@ public class DBContact implements DBObject {
     private String address;
     @Column(name = "MOBILE_NUMBER")
     private String mobileNumber;
+    @Column(name = "SKILLS")
+    @ManyToMany
+    @JoinTable(name = "CONTACT_SKILLS", joinColumns = @JoinColumn(name = "CONTACT_ID"), inverseJoinColumns = @JoinColumn(name = "SKILL_ID"))
+    private Set<DBSkill> skills;
 }

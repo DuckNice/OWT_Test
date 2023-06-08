@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import com.example.ContactsAPI.models.contact.ContactForCreation;
+import com.example.ContactsAPI.models.contact.DTOContact;
 import com.example.ContactsAPI.models.contact.DBContact;
 import com.example.ContactsAPI.repositories.ContactRepository;
 
@@ -16,14 +16,14 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ContactsEndpointTests extends BaseEndpointTests<DBContact, ContactForCreation, ContactRepository> {
+class ContactsEndpointTests extends BaseEndpointTests<DBContact, DTOContact, ContactRepository> {
     public ContactsEndpointTests() {
         super("http://localhost/api/contacts");
     }
 
     @Override
-    protected ContactForCreation createRandomObject() {
-        ContactForCreation contact = new ContactForCreation();
+    protected DTOContact createRandomObject() {
+        DTOContact contact = new DTOContact();
         contact.setFirstName(RandomStringUtils.randomAlphabetic(10));
         contact.setLastName(RandomStringUtils.randomAlphabetic(10));
         contact.setAddress(RandomStringUtils.randomAlphabetic(10));
@@ -33,8 +33,8 @@ class ContactsEndpointTests extends BaseEndpointTests<DBContact, ContactForCreat
     }
 
     @Override
-    protected ContactForCreation createInvalidObject() {
-        ContactForCreation contact = createRandomObject();
+    protected DTOContact createInvalidObject() {
+        DTOContact contact = createRandomObject();
         contact.setEmail(RandomStringUtils.randomAlphabetic(10));
 
         return contact;
@@ -45,7 +45,7 @@ class ContactsEndpointTests extends BaseEndpointTests<DBContact, ContactForCreat
     @Test
     void createExisting_email_then409Conflict() {
         // Given
-        ContactForCreation contact = createRandomObject();
+        DTOContact contact = createRandomObject();
 
         // When
         RestAssured.given()
@@ -64,8 +64,8 @@ class ContactsEndpointTests extends BaseEndpointTests<DBContact, ContactForCreat
     @Test
     void updateWithExisting_email_then409() {
         // Given
-        ContactForCreation contact = createRandomObject();
-        ContactForCreation otherContact = createRandomObject();
+        DTOContact contact = createRandomObject();
+        DTOContact otherContact = createRandomObject();
 
         Response createResponse = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

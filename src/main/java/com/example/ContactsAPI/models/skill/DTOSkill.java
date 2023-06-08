@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class SkillForCreation implements DTObject {
+public class DTOSkill implements DTObject {
     @NotBlank(message = "Name is mandatory")
     private String name;
     @NotNull(message = "Skill is mandatory")
